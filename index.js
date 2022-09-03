@@ -24,6 +24,10 @@ app.use((err, req, res, next) => {
     res.status(status).send(message);
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
 app.listen(process.env.PORT, () => {
     console.log('server on port', process.env.PORT);
 })
