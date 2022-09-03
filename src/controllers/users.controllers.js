@@ -126,6 +126,9 @@ const updateUser = async (req, res) => {
         // * buscar user with company 
         const userCompany = await getUserWithCompany(user._id);
         // * Actuallizar usuario 
+        const salt = await bcrypt.genSalt(10);
+        let password = document;
+        password = bcrypt.hashSync(password, salt);
         await User.findByIdAndUpdate(user._id, {
             userName: `${firstName.trim()} ${lastName.trim()}`,
             firstName: firstName.trim(),
@@ -133,6 +136,7 @@ const updateUser = async (req, res) => {
             typeDocument,
             document,
             cuil,
+            password: password,
             user_type: typeUser
         }, { new: true });
         // * Actualizar userCompany

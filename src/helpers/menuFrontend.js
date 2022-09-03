@@ -39,10 +39,10 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
                     titulo: 'Menu Diario',
                     url: 'menu-diario'
                   },
-                  {
-                    titulo: 'Comensales',
-                    url: 'comensales'
-                  }
+                  // {
+                  //   titulo: 'Comensales',
+                  //   url: 'comensales'
+                  // }
               ]
             }
         )    
@@ -92,10 +92,10 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
                 titulo: 'Menu Diario',
                 url: 'menu-diario'
               },
-              {
-                titulo: 'Solicitud Cantidad',
-                url: 'solicitud-cantidad'
-              }
+              // {
+              //   titulo: 'Solicitud Cantidad',
+              //   url: 'solicitud-cantidad'
+              // }
             ]
           },
           {

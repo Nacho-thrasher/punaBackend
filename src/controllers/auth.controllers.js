@@ -8,17 +8,19 @@ const { getMenuFrontEnd } = require('../helpers/menuFrontend')
 const login = async (req, res) => {
     const { userName, password } = req.body;
     try {
-        const existUser = await Usuario.findOne({ userName })
-            .populate('user_type', 'name')
-            .exec();
+        const userN = userName.toLowerCase().trim();
+        const pass = password.trim();
+        const existUser = await Usuario.findOne({ userName: userN })
+        .populate('user_type', 'name')
+        .exec();
         if (!existUser) {
             return res.status(400).json({
                 ok: false,
                 msg: 'El usuario no existe'
             });
         }
-        
-        const validPassword = await bcrypt.compare(password, existUser.password);
+
+        const validPassword = await bcrypt.compare(pass, existUser.password);
         if (!validPassword) {
             return res.status(400).json({
                 ok: false,
