@@ -343,7 +343,6 @@ const getTotalesEmpresa = async (req, res) => {
                     empresas[index].total += 1;
                 }
             }
-
             return res.status(200).json({
                 ok: true,
                 data: empresas,
@@ -353,19 +352,21 @@ const getTotalesEmpresa = async (req, res) => {
             const getRegistrosByDate = await RegistroDiarioService.getRegistrosByDate(fechaCompleta);
             // realizar un reducer de usuario.empresa
             const empresas = [];
-            getRegistrosByDate.forEach((registro) => {
-                const empresaId = registro.usuario.empresa.uid;
+            for (let i = 0; i < getRegistrosByDate.length; i++) {
+                const empresaId = getRegistrosByDate[i].usuario.empresa.uid;
                 const empresa = empresas.find((empresa) => empresa.uid === empresaId);
                 if (!empresa) {
+                    const visado = await VisadService.getVisadoByEmpresaAndFechaRegistro(empresaId, fechaCompleta);
                     empresas.push({
-                        ...registro.usuario.empresa,
+                        ...getRegistrosByDate[i].usuario.empresa,
                         total: 1,
+                        visado: visado,
                     })
                 } else {
                     const index = empresas.findIndex((empresa) => empresa.uid === empresaId);
                     empresas[index].total += 1;
                 }
-            });
+            }
             return res.status(200).json({
                 ok: true,
                 data: empresas,
