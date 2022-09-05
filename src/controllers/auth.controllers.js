@@ -7,6 +7,7 @@ const { getMenuFrontEnd } = require('../helpers/menuFrontend')
 
 const login = async (req, res) => {
     const { userName, password } = req.body;
+    console.log(userName, password);
     try {
         const userN = userName.toLowerCase().trim();
         const pass = password.trim();
