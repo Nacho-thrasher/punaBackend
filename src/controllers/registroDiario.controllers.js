@@ -81,6 +81,9 @@ const createRegistro = async (req, res) => {
             message: `error: ${error}`,
         })
     }
+
+
+    
 }
 const getRegistro = async (req, res) => {}
 const getRegistros = async (req, res) => {
