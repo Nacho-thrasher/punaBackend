@@ -35,11 +35,20 @@ const createRegistro = async (req, res) => {
             year: 'numeric'
         })
         //# hora actual formato hh:mm:ss
-        const horaActual = new Date().toLocaleTimeString('es-AR', {
+        // const horaActual = new Date().toLocaleTimeString('es-AR', {
+        //     hour: '2-digit',
+        //     minute: '2-digit',
+        //     second: '2-digit'
+        // })
+        // hora actual argentina 2021-08-10T20:00:00.000Z
+        const horaActual = new Date().toLocaleTimeString('es-AR', { 
+            timeZone: 'America/Argentina/Buenos_Aires',
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit'
-        })
+            second: '2-digit' 
+        }) 
+        // separar hora 2 digitos y minutos 2 digitos
+
         console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
         //* 3 traer comida actual con la hora actual
         const comidaActual = await horarioService.getHoraComidaActual();
@@ -77,13 +86,13 @@ const createRegistro = async (req, res) => {
         
     } catch (error) {
         console.log(error);
-        return res.json.status(500).json({
+        return res.status(500).json({
             message: `error: ${error}`,
         })
     }
 
 
-    
+
 }
 const getRegistro = async (req, res) => {}
 const getRegistros = async (req, res) => {
