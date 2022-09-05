@@ -43,5 +43,19 @@ const getByName = async (name) => {
         return null
     }
 }
+const getByCuit = async (cuit) => {
+    try {
+        // buscar por nombre name
+        const company = await Company.findOne({ cuit: cuit });
+        // si existe devolver
+        if (company) {
+            return company;
+        }   
+        return null    
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+}
 
-module.exports = { getById, getAll, create, getByName };
+module.exports = { getById, getAll, create, getByName, getByCuit };

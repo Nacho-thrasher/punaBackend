@@ -2,24 +2,53 @@ const User          = require("../models/User.js");
 const Company       = require('../models/Company');
 const UserCompany   = require('../models/UserCompany');
 
+const getCompanyByCuit = async (cuit) => {
+    try {
+        // buscar cuit en empresa
+        const company = await Company.findOne({ cuit });
+        return company;
+
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
+
 const createCompany = async (req, res) => {
     //? relacion con usuario en update
     const { name, idContratista, direction, description, cuit, city } = req.body;
     try {
-        const company = new Company({
-            name: name.toLowerCase().trim(),
-            direction: direction.toLowerCase().trim(),
-            description: description.toLowerCase().trim(),
-            cuit: cuit.toLowerCase().trim(),
-            city: city.toLowerCase().trim(),
-            contratista: idContratista
-        });
-        await company.save();
-        return res.status(200).json({
-            ok: true,
-            data: company,
-        });
-
+        if (!idContratista) {
+            // crear empresa
+            const company = new Company({
+                name: name.toLowerCase().trim(),
+                direction: direction.toLowerCase().trim(),
+                description: description.toLowerCase().trim(),
+                cuit: cuit.toLowerCase().trim(),
+                city: city.toLowerCase().trim()
+            });
+            // guardar empresa
+            await company.save();
+            return res.status(200).json({
+                ok: true,
+                data: company,
+            });
+        }
+        else {
+            const company = new Company({
+                name: name.toLowerCase().trim(),
+                direction: direction.toLowerCase().trim(),
+                description: description.toLowerCase().trim(),
+                cuit: cuit.toLowerCase().trim(),
+                city: city.toLowerCase().trim(),
+                contratista: idContratista
+            });
+            await company.save();
+            return res.status(200).json({
+                ok: true,
+                data: company,
+            });
+        }
     } catch (error) {
         console.log(error);
         return res.status(500).json({

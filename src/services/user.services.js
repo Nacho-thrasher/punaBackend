@@ -304,7 +304,17 @@ const getByDocument = async (document) => {
         return null;
     }
 }
-const postUser = async (userName, firstName, lastName, password, typeDocument, document, cuil, typeUser, image) => {
+const postUser = async (
+    userName, 
+    firstName, 
+    lastName, 
+    password, 
+    typeDocument, 
+    document,
+    cuil, 
+    typeUser, 
+    image = ''
+) => {
     try {
         console.log(`aqui variables: `,typeUser)
         // findById para traer el usertype
