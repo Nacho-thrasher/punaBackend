@@ -58,4 +58,14 @@ const getByCuit = async (cuit) => {
     }
 }
 
-module.exports = { getById, getAll, create, getByName, getByCuit };
+const updateCompanyContratista = async (id, contratista) => {
+    try {
+        const company = await Company.findByIdAndUpdate(id, { contratista: contratista });
+        return company;
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+}
+
+module.exports = { updateCompanyContratista, getById, getAll, create, getByName, getByCuit };

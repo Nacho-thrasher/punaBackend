@@ -41,14 +41,22 @@ const getHoraComida = async () => {}
 const deleteHoraComida = async () => {}
 const getHoraComidaActual = async () => {
     try {
+        // hora actual argentina
+        const horaActual = new Date().toLocaleString("es-AR", {timeZone: "America/Argentina/Buenos_Aires", 
+            hour: 'numeric', minute: 'numeric'
+        });
+
         // devolver hora de comida actual en la que nos encontramos con respecto a la hora local
+        console.log(horaActual);
+        
         const horaComidaActual = await HorasComida.findOne({
             horaInicio: {
-                // hora local de argentina no de la computadora
-                $lte: new Date().toLocaleTimeString()
+                // $lte = less than or equal to (menor o igual que)
+                $lte: horaActual
             },
             horaFin: {
-                $gte: new Date().toLocaleTimeString()
+                // $gte = greater than or equal to (mayor o igual que)
+                $gte: horaActual
             }
         });
         console.log(horaComidaActual);

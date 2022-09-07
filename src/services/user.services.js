@@ -342,4 +342,35 @@ const postUser = async (
     }    
 }
 
-module.exports = { getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };
+const actualizarUserAndUserCompany = async (
+    firstName, 
+    lastName, 
+    typeDocument, 
+    document, 
+    cuil, 
+    idUser, 
+    idCompany
+) => {
+    try {
+        //* 1 actualizar user
+        const user = await User.findByIdAndUpdate(idUser, {
+            userName: `${firstName} ${lastName}`,
+            firstName: firstName,
+            lastName: lastName,
+            typeDocument: typeDocument,
+            document: document,
+            cuil: cuil,
+        }, {new: true});
+        //* 2 actualizar userCompany buscar por idUser
+        const userCompany = await UserCompany.findOneAndUpdate({user: idUser}, {
+            company: idCompany,
+        }, {new: true});
+        return true;
+        
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+module.exports = { actualizarUserAndUserCompany, getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };
