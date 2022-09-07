@@ -46,6 +46,7 @@ const getHoraComidaActual = async () => {
             hour: 'numeric', minute: 'numeric'
         });
 
+        
         // devolver hora de comida actual en la que nos encontramos con respecto a la hora local
         console.log(horaActual);
         
