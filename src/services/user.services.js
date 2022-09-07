@@ -361,7 +361,18 @@ const actualizarUserAndUserCompany = async (
             document: document,
             cuil: cuil,
         }, {new: true});
-        //* 2 actualizar userCompany buscar por idUser
+        //* 2 buscar userCompany
+        const userCompanyFind = await UserCompany.findOne({user: idUser});
+        if (!userCompanyFind) {
+            //* 3 crear userCompany
+            const userCompany = new UserCompany({
+                user: idUser,
+                company: idCompany,
+            });
+            const newUserCompany = await userCompany.save();
+            return newUserCompany;
+        }
+        //* 3 actualizar userCompany buscar por idUser
         const userCompany = await UserCompany.findOneAndUpdate({user: idUser}, {
             company: idCompany,
         }, {new: true});

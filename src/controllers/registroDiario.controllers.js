@@ -51,8 +51,14 @@ const createRegistro = async (req, res) => {
 
         console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
         //* 3 traer comida actual con la hora actual
-        // const comidaActual = await horarioService.getHoraComidaActual();
-        const typeMenu = menu['lunch'];
+        const comidaActual = await horarioService.getHoraComidaActual();
+        if (!comidaActual || comidaActual == null) {
+            return res.status(400).json({
+                ok: false,
+                message: 'El horario no esta disponible'
+            });
+        }
+        const typeMenu = menu[comidaActual.tipo];
         //* 4 armar objeto 
         const args = {
             user: idUser,
@@ -60,7 +66,7 @@ const createRegistro = async (req, res) => {
             date: fechaHoy,
             time: horaActual,
             type: idMenu,
-            lunch: typeMenu._id
+            [comidaActual.tipo]: typeMenu._id
         }  
         //* 4 si existe usuario, se crea registro
         const registro = await createRegistroDiario(args);

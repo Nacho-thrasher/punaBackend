@@ -46,7 +46,7 @@ const getHoraComidaActual = async () => {
             hour: 'numeric', minute: 'numeric'
         });
 
-        
+
         // devolver hora de comida actual en la que nos encontramos con respecto a la hora local
         console.log(horaActual);
         
@@ -60,7 +60,11 @@ const getHoraComidaActual = async () => {
                 $gte: horaActual
             }
         });
-        console.log(horaComidaActual);
+        // si no encontramos ninguna hora de comida que coincida con la hora actual
+        if (!horaComidaActual) {
+            return null;
+        }
+
         return horaComidaActual;
 
     } catch (error) {
