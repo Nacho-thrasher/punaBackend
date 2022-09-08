@@ -31,21 +31,12 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
               // ]
             },
             {
-              titulo: 'Servicios',
-              icono: 'nav-icon fas fa-solid fa-gear',
-              url: null,
-              child: true,
-              subMenu: [
-                  {
-                    titulo: 'Menu Diario',
-                    url: 'menu-diario'
-                  },
-                  // {
-                  //   titulo: 'Comensales',
-                  //   url: 'comensales'
-                  // }
-              ]
-            }
+              titulo: 'Menu Diario',
+              icono: 'nav-icon fas fa-solid fa-utensils',
+              url: 'menu-diario',
+              child: false,
+              subMenu: null,
+            },
         )    
     }
     if (role == 'admin') {
@@ -84,24 +75,15 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
             // ]
           },
           {
-            titulo: 'Servicios',
-            icono: 'nav-icon fas fa-solid fa-gear',
-            url: null,
-            child: true,
-            subMenu: [
-              {
-                titulo: 'Menu Diario',
-                url: 'menu-diario'
-              },
-              // {
-              //   titulo: 'Solicitud Cantidad',
-              //   url: 'solicitud-cantidad'
-              // }
-            ]
+            titulo: 'Menu Diario',
+            icono: 'nav-icon fas fa-solid fa-utensils',
+            url: 'menu-diario',
+            child: false,
+            subMenu: null,
           },
           {
             titulo: 'Comensales',
-            icono: 'nav-icon fas fa-solid fa-utensils',
+            icono: 'nav-icon fas fa-solid fa-users',
             url: 'comensales',
             child: false,
             subMenu: null
@@ -124,6 +106,17 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
           child: false,
           subMenu: null,
         }
+      )
+    }
+    if (role == 'operario') {
+      menu.push(
+        {
+          titulo: 'Registrar Comensales',
+          icono: 'nav-icon fas fa-solid fa-file',
+          url: 'registrar-comensales',
+          child: false,
+          subMenu: null
+        },
       )
     }
     return menu;

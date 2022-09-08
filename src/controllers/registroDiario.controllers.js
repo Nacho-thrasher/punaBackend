@@ -122,6 +122,7 @@ const getRegistros = async (req, res) => {
                 month: '2-digit',
                 year: 'numeric'
             })
+            console.log('dia hoy',dateToday)
             const allRegistrosDiarios = await getAllRegistrosDiariosToday(dateToday)
             if (!allRegistrosDiarios) {
                 return res.status(400).json({

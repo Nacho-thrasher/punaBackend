@@ -6,6 +6,7 @@ const Breakfast = require('../models/Breakfast');
 const AfternoonSnack = require('../models/AfternoonSnack');
 const Dinner = require('../models/Dinner');
 const Lunch = require('../models/Lunch');
+const HorasComida = require('../models/HorasComida.model');   
 
 const createMenu = async (req, res) => {
     //@ input date en front 
@@ -109,10 +110,25 @@ const getMenues = async (req, res) => {
         .populate('lunch', 'dish')
         .populate('dinner', 'dish')
         .populate('afternoonSnack', 'dish')
-        
+
+        // traer horarioComidas de cada menu
+        const horariosComidas = await HorasComida.find();
+        // traer userMenu de cada menu
+        const newMenu = menus.map(menu => {
+            return {
+                ...menu._doc,
+                uid: menu._id,
+                horasBreakfast: horariosComidas.find(item => item.tipo == 'breakfast'),
+                horasLunch: horariosComidas.find(item => item.tipo == 'lunch'),
+                horasDinner: horariosComidas.find(item => item.tipo == 'dinner'),
+                horasAfternoonSnack: horariosComidas.find(item => item.tipo == 'afternoonSnack'),
+            }
+        });
+        console.log(newMenu);
+
         return res.status(200).json({
             ok: true,
-            menus,
+            menus: newMenu,
         })
         
     } catch (error) {
