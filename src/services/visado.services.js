@@ -17,7 +17,6 @@ const getVisadoByEmpresaAndFechaRegistro = async(empresa, fechaRegistro) => {
         const visado = await Visado.findOne({ empresa, fechaRegistro })
         .populate('empresa')
         .populate('usuario')
-        console.log(visado)
         return visado;
     } catch (error) {
         console.log(error)

@@ -320,17 +320,18 @@ const getTotalesEmpresa = async (req, res) => {
         //* ============= *
         const user = await UserService.getById(idUser);
         if (user.user_type.name != 'admin') { 
+            console.log('no es admin');
             const document = user.document;
             const userSoliciante = await UserService.getUserWithCompany(document);
             companyUser = (userSoliciante[0].empresa.cuit).toString();
             const getRegistrosByDate = await RegistroDiarioService.getRegistrosByDateNoAdmin(fechaCompleta, companyUser)
             const prueba = getRegistrosByDate;
-          
+            
             const empresas = [];
             
             for (let i = 0; i < getRegistrosByDate.length; i++) {
                 const empresaId = getRegistrosByDate[i].usuario.empresa.uid;
-                const empresa = empresas.find((empresa) => empresa.uid === empresaId);
+                const empresa = empresas.find((empresa) => (empresa.uid).toString() == (empresaId).toString());
                 if (!empresa) {
                     const visado = await VisadService.getVisadoByEmpresaAndFechaRegistro(empresaId, fechaCompleta);
                     empresas.push({
@@ -339,7 +340,7 @@ const getTotalesEmpresa = async (req, res) => {
                         visado: visado,
                     })
                 } else {
-                    const index = empresas.findIndex((empresa) => empresa.uid === empresaId);
+                    const index = empresas.findIndex((empresa) => (empresa.uid).toString() == (empresaId).toString());
                     empresas[index].total += 1;
                 }
             }
@@ -349,13 +350,22 @@ const getTotalesEmpresa = async (req, res) => {
             })
         }
         else {
+            console.log('es admin');
             const getRegistrosByDate = await RegistroDiarioService.getRegistrosByDate(fechaCompleta);
             // realizar un reducer de usuario.empresa
             const empresas = [];
             for (let i = 0; i < getRegistrosByDate.length; i++) {
                 const empresaId = getRegistrosByDate[i].usuario.empresa.uid;
-                const empresa = empresas.find((empresa) => empresa.uid === empresaId);
-                if (!empresa) {
+                const cuitEmpresa = getRegistrosByDate[i].usuario.empresa.cuit;
+                console.log(empresaId);
+                const empresa = empresas.find((empresa) => {
+                    if ((empresa.uid).toString() == (empresaId).toString()) {
+                        console.log('encontrado', empresa);
+                        return empresa;
+                    }
+                });
+                // console.log(empresa);
+                if (!empresa || empresa == undefined) {
                     const visado = await VisadService.getVisadoByEmpresaAndFechaRegistro(empresaId, fechaCompleta);
                     empresas.push({
                         ...getRegistrosByDate[i].usuario.empresa,
@@ -363,10 +373,11 @@ const getTotalesEmpresa = async (req, res) => {
                         visado: visado,
                     })
                 } else {
-                    const index = empresas.findIndex((empresa) => empresa.uid === empresaId);
+                    const index = empresas.findIndex((empresa) => (empresa.uid).toString() == (empresaId).toString());
                     empresas[index].total += 1;
                 }
             }
+
             return res.status(200).json({
                 ok: true,
                 data: empresas,

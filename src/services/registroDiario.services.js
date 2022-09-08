@@ -1266,7 +1266,7 @@ const getRegistrosByDate = async(date)=>{
                 },
             }
         ]);
-        console.log(`aqui respuesta: `,registrosDiarios);
+        
         return registrosDiarios;
 
     } catch (error) {

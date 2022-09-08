@@ -8,7 +8,8 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
           url: '/dashboard',
           child: false,
           subMenu: null
-        }
+        },
+        
     ];
     if (role == 'supervisor') {
         menu.push(
@@ -112,6 +113,17 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
             child: false,
             subMenu: null
           }
+      )
+    }
+    if (role == 'cocina') {
+      menu.push(
+        {
+          titulo: 'Menu Diario',
+          icono: 'nav-icon fas fa-solid fa-utensils',
+          url: 'menu-diario',
+          child: false,
+          subMenu: null,
+        }
       )
     }
     return menu;

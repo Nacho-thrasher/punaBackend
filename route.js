@@ -22,4 +22,5 @@ router.use('/totales', totalesRouter)
 router.use('/visado', visadoRouter);
 router.use('/comensales', comensalesRouter)
 
+
 module.exports = router
