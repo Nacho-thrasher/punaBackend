@@ -9,6 +9,7 @@ const horarioService = require('../services/horario.services');
 
 const createRegistro = async (req, res) => {
     //? se puede recibir empresa
+    const idUserSoliciante = req.uid;
     const { idUser, idMenu, idCompany } = req.body;
     try {
         //* 1 si no existe usuario error
@@ -27,7 +28,6 @@ const createRegistro = async (req, res) => {
                 message: 'No existe menu'
             });
         }
-        //! luego consultar a una tabla especifica para las horas de desayuno almuerzo etc, para establecer cual se asignara a el registro actual
         //# fecha hoy formato dd/mm/yyyy
         const fechaHoy = new Date().toLocaleDateString('es-AR', {
             day: '2-digit',
@@ -35,20 +35,13 @@ const createRegistro = async (req, res) => {
             year: 'numeric'
         })
         //# hora actual formato hh:mm:ss
-        // const horaActual = new Date().toLocaleTimeString('es-AR', {
-        //     hour: '2-digit',
-        //     minute: '2-digit',
-        //     second: '2-digit'
-        // })
-        // hora actual argentina 2021-08-10T20:00:00.000Z
         const horaActual = new Date().toLocaleTimeString('es-AR', { 
             timeZone: 'America/Argentina/Buenos_Aires',
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit' 
-        }) 
+        })
         // separar hora 2 digitos y minutos 2 digitos
-
         console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
         //* 3 traer comida actual con la hora actual
         const comidaActual = await horarioService.getHoraComidaActual();
@@ -66,7 +59,8 @@ const createRegistro = async (req, res) => {
             date: fechaHoy,
             time: horaActual,
             type: idMenu,
-            [comidaActual.tipo]: typeMenu._id
+            [comidaActual.tipo]: typeMenu._id,
+            createdBy: idUserSoliciante
         }  
         //* 4 si existe usuario, se crea registro
         const registro = await createRegistroDiario(args);
@@ -96,9 +90,6 @@ const createRegistro = async (req, res) => {
             message: `error: ${error}`,
         })
     }
-
-
-
 }
 const getRegistro = async (req, res) => {}
 const getRegistros = async (req, res) => {
@@ -125,6 +116,7 @@ const getRegistros = async (req, res) => {
                 month: '2-digit',
                 year: 'numeric'
             })
+            console.log('dia hoy',dateToday)
             const allRegistrosDiarios = await getAllRegistrosDiariosToday(dateToday)
             if (!allRegistrosDiarios) {
                 return res.status(400).json({
@@ -245,5 +237,80 @@ const getRegistroByCompany = async (req, res) => {
         })
     }
 }
+const createRegistroManual = async (req, res) => {
+    const idUserSoliciante = req.uid;
+    const { idUser, horaMenu, tipoMenu, idCompany, fecha } = req.body;
+    try {
+        //* 1 si no existe usuario error
+        const user = await User.findById(idUser);
+        if (!user) {
+            return res.status(400).json({
+                ok: false,
+                message: 'No existe usuario'
+            });
+        }
+        //* 2 buscar menu por id de menu
+        const menu = await getMenuById(tipoMenu);
+        if (!menu) {
+            return res.status(400).json({
+                ok: false,
+                message: 'No existe menu'
+            });
+        }
+        //* 3 buscar registro diario por id de usuario y fecha
+        const fechaHoy = new Date().toLocaleDateString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        })
+        const horaActual = new Date().toLocaleTimeString('es-AR', { 
+            timeZone: 'America/Argentina/Buenos_Aires',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit' 
+        })
+        console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
+        const typeMenu = menu[horaMenu];
+        console.log('typeMenu', typeMenu);
+        //* 4 armar objeto 
+        const args = {
+            user: idUser,
+            company: idCompany,
+            date: fecha,
+            time: horaActual,
+            type: tipoMenu,
+            [horaMenu]: typeMenu._id,
+            createdBy: idUserSoliciante
+        }  
+        console.log('args', args);
 
-module.exports = { createRegistro, getRegistro, getRegistros, updateRegistro, deleteRegistro, getRegistroByCompany } 
+        //* 4 si existe usuario, se crea registro
+        const registro = await createRegistroDiario(args);
+        if (!registro) {
+            return res.status(400).json({
+                ok: false,
+                message: 'No se pudo crear registro'
+            });
+        }
+        const registroPopulate = await RegistroDiario.findById(registro._id)
+        .populate('type')
+        .populate('breakfast')
+        .populate('lunch')
+        .populate('afternoonSnack')
+        .populate('dinner')
+        .populate('user');
+        
+        return res.status(200).json({
+            ok: true,
+            registro: registroPopulate
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.json.status(500).json({
+            message: `error: ${error}`,
+        })
+    }
+}
+
+module.exports = { createRegistroManual, createRegistro, getRegistro, getRegistros, updateRegistro, deleteRegistro, getRegistroByCompany } 

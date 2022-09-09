@@ -6,7 +6,7 @@ const { getMenuFrontEnd } = require('../helpers/menuFrontend')
 const Company             = require('../models/Company');
 const UserCompany         = require('../models/UserCompany');
 //* 
-const { getUserWithCompany, getAllUsersWithCompany, getAllUsers, postUser, getByDocument } = require('../services/user.services');
+const { getUserCompanyByUser, getUserWithCompany, getAllUsersWithCompany, getAllUsers, postUser, getByDocument } = require('../services/user.services');
 const { getById } = require('../services/company.services');
 const { getByUserCompany, postUserCompany } = require('../services/userCompany.services');
 const Types = require('../services/userTypes.services');
@@ -117,18 +117,20 @@ const getUserForType = async (req, res) => {
 const updateUser = async (req, res) => {
     const id = req.params.id;
     const {
-        firstName, lastName, empresaId, typeDocument, document, cuil, typeUser
+        firstName, lastName, empresaId, typeDocument, document, cuil, typeUser, password
     } = req.body;
     try {
         // quitar espacios adelante y atras, y camelcase
-        // * buscar usuario por documento
-        const user = await getByDocument(document);
+        // * buscar usuario por id
+        console.log('llego: ', id);
+        const user = await User.findById(id);
         // * buscar user with company 
-        const userCompany = await getUserWithCompany(user._id);
+        const userCompany = await getUserCompanyByUser(user._id);
+        console.log('userCompany: ', user._id, userCompany);
         // * Actuallizar usuario 
         const salt = await bcrypt.genSalt(10);
-        let password = document;
-        password = bcrypt.hashSync(password, salt);
+        // let password = document;
+        const pass = bcrypt.hashSync(password, salt);
         await User.findByIdAndUpdate(user._id, {
             userName: `${firstName.trim()} ${lastName.trim()}`,
             firstName: firstName.trim(),
@@ -136,12 +138,12 @@ const updateUser = async (req, res) => {
             typeDocument,
             document,
             cuil,
-            password: password,
+            password: pass,
             user_type: typeUser
         }, { new: true });
         // * Actualizar userCompany
         await UserCompany.findByIdAndUpdate(userCompany._id, {
-            empresaId
+            company: empresaId
         }, { new: true });
         // * devolver usuario
         const userUpdated = await getUserWithCompany(user._id);

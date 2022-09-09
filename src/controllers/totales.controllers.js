@@ -27,6 +27,8 @@ const getTotalesAnio = async (req, res) => {
                 { mes: 'Noviembre', nroMes: 11, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
                 { mes: 'Diciembre', nroMes: 12, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
             ];
+            console.log('aa',allRegistros);
+            let visados = 0; let noVisados = 0; let total = 0;
             //* 3- buscar en cada registro el mes y sumarle los valores
             allRegistros.forEach((registro) => {
                 const mesRegistro = registro.date.split('/')[1];
@@ -43,7 +45,9 @@ const getTotalesAnio = async (req, res) => {
                         }
                         if (Object.keys(registro.dinner).length > 0) {
                             mes.dinner += 1;
-                        }    
+                        }
+                        
+                        mes.total = total += 1;
                     }
                 });
             });
@@ -72,6 +76,7 @@ const getTotalesAnio = async (req, res) => {
                 { mes: 'Noviembre', nroMes: 11, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
                 { mes: 'Diciembre', nroMes: 12, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
             ];
+            let visados = 0; let noVisados = 0; let total = 0;
             //* 3- buscar en cada registro el mes y sumarle los valores
             allRegistros.forEach((registro) => {
                 const mesRegistro = registro.date.split('/')[1];
@@ -89,9 +94,51 @@ const getTotalesAnio = async (req, res) => {
                         if (Object.keys(registro.dinner).length > 0) {
                             mes.dinner += 1;
                         }    
+                        mes.fechas = `${registro.date}|` + mes.fechas;
                     }
                 });
             });
+            //* 4 
+            for (let index = 0; index < meses.length; index++) {
+                const mes = meses[index];
+                if (mes.fechas) {
+                    const fechas = mes.fechas.split('|');
+                    fechas.pop();
+                    const fechasSinRepetir = [...new Set(fechas)];
+                    mes.fechas = fechasSinRepetir;
+                }
+            }
+            let cantidadVisar = 0; let cantidadVisada = 0;
+            //* buscar registros por mes y separar por empresa
+            for (let index = 0; index < meses.length; index++) {
+                const mes = meses[index];
+                if (mes.fechas) {
+                    const fechas = mes.fechas;
+                    const empresas = [];
+                    for (let index = 0; index < fechas.length; index++) {
+                        console.log(fechas[index]);
+                        const regs = await RegistroDiarioService.getRegistrosByDate(fechas[index]);
+                        // no repetir empresas usuario.empresa
+                        const empresasSinRepetir = [...new Set(regs.map(reg => reg.usuario.empresa))];
+                        // recorrer empresas sin repetir y preguntar si se viso o no
+                        console.log(empresasSinRepetir);
+                        for (let index = 0; index < empresasSinRepetir.length; index++) {
+                            cantidadVisar += 1;
+                            const empresa = empresasSinRepetir[index].uid;
+                            const visado = await VisadService.getVisadoByEmpresaAndDate(empresa, fechas[index]); 
+                            if (visado) {
+                                // console.log('visado',empresa ,visado);
+                                cantidadVisada += 1;
+                            }
+                        }
+                        // console.log(fechas[index] ,empresasSinRepetir);                        
+                    }
+                }
+            }
+            // console.log(cantidadVisar, cantidadVisada);
+            console.log(meses);
+
+            // console.log('meses', meses[8]);
             //* 4- devolver array de meses con sus totales
             return res.status(200).json({
                 ok: true,
@@ -320,26 +367,28 @@ const getTotalesEmpresa = async (req, res) => {
         //* ============= *
         const user = await UserService.getById(idUser);
         if (user.user_type.name != 'admin') { 
+            console.log('no es admin');
             const document = user.document;
             const userSoliciante = await UserService.getUserWithCompany(document);
             companyUser = (userSoliciante[0].empresa.cuit).toString();
             const getRegistrosByDate = await RegistroDiarioService.getRegistrosByDateNoAdmin(fechaCompleta, companyUser)
             const prueba = getRegistrosByDate;
-          
+            
             const empresas = [];
             
             for (let i = 0; i < getRegistrosByDate.length; i++) {
                 const empresaId = getRegistrosByDate[i].usuario.empresa.uid;
-                const empresa = empresas.find((empresa) => empresa.uid === empresaId);
+                const empresa = empresas.find((empresa) => (empresa.uid).toString() == (empresaId).toString());
                 if (!empresa) {
                     const visado = await VisadService.getVisadoByEmpresaAndFechaRegistro(empresaId, fechaCompleta);
                     empresas.push({
                         ...getRegistrosByDate[i].usuario.empresa,
                         total: 1,
                         visado: visado,
+                        registroId: getRegistrosByDate[i]._id,
                     })
                 } else {
-                    const index = empresas.findIndex((empresa) => empresa.uid === empresaId);
+                    const index = empresas.findIndex((empresa) => (empresa.uid).toString() == (empresaId).toString());
                     empresas[index].total += 1;
                 }
             }
@@ -349,24 +398,35 @@ const getTotalesEmpresa = async (req, res) => {
             })
         }
         else {
+            console.log('es admin');
             const getRegistrosByDate = await RegistroDiarioService.getRegistrosByDate(fechaCompleta);
             // realizar un reducer de usuario.empresa
             const empresas = [];
             for (let i = 0; i < getRegistrosByDate.length; i++) {
                 const empresaId = getRegistrosByDate[i].usuario.empresa.uid;
-                const empresa = empresas.find((empresa) => empresa.uid === empresaId);
-                if (!empresa) {
+                const cuitEmpresa = getRegistrosByDate[i].usuario.empresa.cuit;
+                console.log(empresaId);
+                const empresa = empresas.find((empresa) => {
+                    if ((empresa.uid).toString() == (empresaId).toString()) {
+                        console.log('encontrado', empresa);
+                        return empresa;
+                    }
+                });
+                // console.log(empresa);
+                if (!empresa || empresa == undefined) {
                     const visado = await VisadService.getVisadoByEmpresaAndFechaRegistro(empresaId, fechaCompleta);
                     empresas.push({
                         ...getRegistrosByDate[i].usuario.empresa,
                         total: 1,
                         visado: visado,
+                        registroId: getRegistrosByDate[i]._id,
                     })
                 } else {
-                    const index = empresas.findIndex((empresa) => empresa.uid === empresaId);
+                    const index = empresas.findIndex((empresa) => (empresa.uid).toString() == (empresaId).toString());
                     empresas[index].total += 1;
                 }
             }
+
             return res.status(200).json({
                 ok: true,
                 data: empresas,

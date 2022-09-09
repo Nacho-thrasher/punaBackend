@@ -181,7 +181,19 @@ const getAllUsersWithCompany = async (userType) => {
         return null;
     }
 }
-const getUserWithCompany = async (userId, companyId, userType) => {
+
+const getUserCompanyByUser = async (userId) => {
+    try {
+        const userCompany = await UserCompany.findOne({ user: userId }).populate('company');
+        return userCompany;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const getUserWithCompany = async (userId) => {
     try {
         const usersCompanies = await UserCompany.aggregate([
             { // #  lookup para obtener la empresa
@@ -384,4 +396,4 @@ const actualizarUserAndUserCompany = async (
     }
 }
 
-module.exports = { actualizarUserAndUserCompany, getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };
+module.exports = { getUserCompanyByUser, actualizarUserAndUserCompany, getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };

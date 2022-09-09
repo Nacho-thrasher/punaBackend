@@ -360,6 +360,21 @@ const getAllRegistrosDiarios = async()=>{
                     includeArrayIndex: 'afternoonSnackIndex',
                 }
             },
+            // buscar eb campo createdBy el usuario que creo el registro
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'createdBy',
+                    foreignField: '_id',
+                    as: 'createdBy',
+                } 
+            },
+            {
+                $unwind: {
+                    path: '$createdBy',
+                    preserveNullAndEmptyArrays: true,
+                }
+            },
             {
                 $project: {
                     uid: '$_id',
@@ -408,12 +423,16 @@ const getAllRegistrosDiarios = async()=>{
                             name: '$user.user_type.name',
                         }
                     },
-                        
+                    createdBy: {
+                        uid: '$createdBy._id',
+                        userName: '$createdBy.userName',
+                        document: '$createdBy.document',
+                        firstName: '$createdBy.firstName',
+                        lastName: '$createdBy.lastName',
+                    }
                 },
                 
             }
-            
-
         ]);
         return registrosDiarios;
 
@@ -1261,12 +1280,12 @@ const getRegistrosByDate = async(date)=>{
                             uid: '$user.user_type._id',
                             name: '$user.user_type.name',
                         }
-                    },
+                    }
                         
                 },
             }
         ]);
-        console.log(`aqui respuesta: `,registrosDiarios);
+        
         return registrosDiarios;
 
     } catch (error) {
