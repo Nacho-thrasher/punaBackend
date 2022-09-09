@@ -54,6 +54,10 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
               {
                 titulo: 'Lista Registros',
                 url: 'lista-comensales'
+              },
+              {
+                titulo: 'Extras',
+                url: 'extras'
               }
             ]
           },

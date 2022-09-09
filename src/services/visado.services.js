@@ -24,4 +24,16 @@ const getVisadoByEmpresaAndFechaRegistro = async(empresa, fechaRegistro) => {
     }
 }
 
-module.exports = { createVisado, getVisadoByEmpresaAndFechaRegistro }
+const getVisadoByEmpresaAndDate = async(empresa, date) => {
+    try {
+        const visado = await Visado.find({ empresa, fechaRegistro: date })
+        console.log(visado)
+        return visado;        
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
+module.exports = { createVisado, getVisadoByEmpresaAndFechaRegistro, getVisadoByEmpresaAndDate }

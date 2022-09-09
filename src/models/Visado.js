@@ -18,7 +18,7 @@ const VisadoSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         require: true
-    },
+    }
 })
 //? schema methods for user model
 VisadoSchema.method('toJSON', function () {

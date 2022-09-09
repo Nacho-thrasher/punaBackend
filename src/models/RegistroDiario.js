@@ -41,6 +41,12 @@ const RegistroDiarioSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Company',
         require: true
+    },
+    // usuario que creo el registro
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
     }
 });
 //? schema methods for user model

@@ -9,9 +9,9 @@ const horarioService = require('../services/horario.services');
 
 const createRegistro = async (req, res) => {
     //? se puede recibir empresa
+    const idUserSoliciante = req.uid;
     const { idUser, idMenu, idCompany } = req.body;
     try {
-
         //* 1 si no existe usuario error
         const user = await User.findById(idUser);
         if (!user) {
@@ -28,7 +28,6 @@ const createRegistro = async (req, res) => {
                 message: 'No existe menu'
             });
         }
-        //! luego consultar a una tabla especifica para las horas de desayuno almuerzo etc, para establecer cual se asignara a el registro actual
         //# fecha hoy formato dd/mm/yyyy
         const fechaHoy = new Date().toLocaleDateString('es-AR', {
             day: '2-digit',
@@ -36,12 +35,6 @@ const createRegistro = async (req, res) => {
             year: 'numeric'
         })
         //# hora actual formato hh:mm:ss
-        // const horaActual = new Date().toLocaleTimeString('es-AR', {
-        //     hour: '2-digit',
-        //     minute: '2-digit',
-        //     second: '2-digit'
-        // })
-        // hora actual argentina 2021-08-10T20:00:00.000Z
         const horaActual = new Date().toLocaleTimeString('es-AR', { 
             timeZone: 'America/Argentina/Buenos_Aires',
             hour: '2-digit',
@@ -66,7 +59,8 @@ const createRegistro = async (req, res) => {
             date: fechaHoy,
             time: horaActual,
             type: idMenu,
-            [comidaActual.tipo]: typeMenu._id
+            [comidaActual.tipo]: typeMenu._id,
+            createdBy: idUserSoliciante
         }  
         //* 4 si existe usuario, se crea registro
         const registro = await createRegistroDiario(args);
@@ -244,8 +238,8 @@ const getRegistroByCompany = async (req, res) => {
     }
 }
 const createRegistroManual = async (req, res) => {
-    console.log(req.body);
-    const { idUser, horaMenu, tipoMenu, idCompany } = req.body;
+    const idUserSoliciante = req.uid;
+    const { idUser, horaMenu, tipoMenu, idCompany, fecha } = req.body;
     try {
         //* 1 si no existe usuario error
         const user = await User.findById(idUser);
@@ -282,10 +276,11 @@ const createRegistroManual = async (req, res) => {
         const args = {
             user: idUser,
             company: idCompany,
-            date: fechaHoy,
+            date: fecha,
             time: horaActual,
             type: tipoMenu,
-            [horaMenu]: typeMenu._id
+            [horaMenu]: typeMenu._id,
+            createdBy: idUserSoliciante
         }  
         console.log('args', args);
 
