@@ -27,6 +27,7 @@ const getTotalesAnio = async (req, res) => {
                 { mes: 'Noviembre', nroMes: 11, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
                 { mes: 'Diciembre', nroMes: 12, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
             ];
+            console.log('aa',allRegistros);
             let visados = 0; let noVisados = 0; let total = 0;
             //* 3- buscar en cada registro el mes y sumarle los valores
             allRegistros.forEach((registro) => {
@@ -45,12 +46,7 @@ const getTotalesAnio = async (req, res) => {
                         if (Object.keys(registro.dinner).length > 0) {
                             mes.dinner += 1;
                         }
-                        if (Object.keys(registro.visado).length > 0) {
-                            mes.visado = visados += 1;
-                        } 
-                        if (Object.keys(registro.visado).length == 0){
-                            mes.noVisado = noVisados += 1;
-                        }
+                        
                         mes.total = total += 1;
                     }
                 });
