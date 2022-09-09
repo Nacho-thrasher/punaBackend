@@ -35,7 +35,13 @@ const createComensalesExcel = async (req, res) => {
             //* 1- 3 asignar variables
             const firstName = empleado.split(',')[1]
             const lastName = empleado.split(',')[0]
-            const document = numeroDocumento ? numeroDocumento : cuil.split('-')[1];
+            // si cuil incluye guiones
+            let document = numeroDocumento ? numeroDocumento : cuil.split;
+            if (cuil.includes('-')) {
+                document = cuil.split('-')[1];     
+            }
+            // const document = numeroDocumento ? numeroDocumento : cuil.split('-')[1];
+
             const tipoDocument = tipoDocumento ? tipoDocumento : 'DNI'
             //* 1- 4 si existe editarlo
             const user = await UserService.getByDocument(numeroDocumento ? numeroDocumento : cuil.split('-')[1]);
