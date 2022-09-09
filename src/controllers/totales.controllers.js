@@ -46,7 +46,6 @@ const getTotalesAnio = async (req, res) => {
                         if (Object.keys(registro.dinner).length > 0) {
                             mes.dinner += 1;
                         }
-                        
                         mes.total = total += 1;
                     }
                 });
