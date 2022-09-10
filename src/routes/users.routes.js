@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { check } = require('express-validator')
-const { createUser, getUser, getUsers, updateUser, deleteUser, userTypes, getUserForType, createUserWithCompany, getUserTypes } = require("../controllers/users.controllers");
+const { cambiarPassword, createUser, getUser, getUsers, updateUser, deleteUser, userTypes, getUserForType, createUserWithCompany, getUserTypes } = require("../controllers/users.controllers");
 //* MIDDLEWARES - validaciones
 const { validarCampos } = require('../middlewares/validar.campos.js');
 const { validarJwt } = require('../middlewares/validarJwt.js');
@@ -29,5 +29,7 @@ router.get('/', getUsers)
 router.get('/:type', getUserForType)
 // * update user
 router.put('/:id', updateUser)
+//* cambiar password
+router.put('/password/:id', cambiarPassword)
 
 module.exports = router;

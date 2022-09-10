@@ -242,4 +242,25 @@ const getUserTypes = async (req, res) => {
     }
 }
 
-module.exports = { createUser, getUsers, updateUser, deleteUser, userTypes, getUserForType, createUserWithCompany, getUserTypes };
+const cambiarPassword = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const { password } = req.body;
+        const salt = await bcrypt.genSalt(10);
+        const pass = bcrypt.hashSync(password, salt);
+        const user = await User.findByIdAndUpdate(id, { password: pass }, { new: true });
+        return res.status(200).json({
+            ok: true,
+            user
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            message: `error: ${error}`,
+        })
+    }
+}
+
+module.exports = { cambiarPassword, createUser, getUsers, updateUser, deleteUser, userTypes, getUserForType, createUserWithCompany, getUserTypes };
