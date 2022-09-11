@@ -62,7 +62,7 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
             ]
           },
           {
-            titulo: 'Totales',
+            titulo: 'Certificacion de servicios',
             icono: 'nav-icon fas fa-solid fa-magnifying-glass-chart',
             url: 'totales',
             child: false, 
