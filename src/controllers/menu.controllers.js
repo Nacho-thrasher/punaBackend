@@ -124,7 +124,7 @@ const getMenues = async (req, res) => {
                 horasAfternoonSnack: horariosComidas.find(item => item.tipo == 'afternoonSnack'),
             }
         });
-        console.log(newMenu);
+        // console.log(newMenu);
 
         return res.status(200).json({
             ok: true,
@@ -205,7 +205,7 @@ const getAfternoonSnack = async (req, res) => {
 const createDish = async (req, res) => {
     const { type, dish } = req.body;
     try {
-        console.log(req.body);
+        // console.log(req.body);
         if (type == 'breakfast') {
             const breakfast = await Breakfast.create({ dish });
             return res.status(200).json({

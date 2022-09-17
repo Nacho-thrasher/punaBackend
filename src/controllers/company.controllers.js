@@ -181,7 +181,7 @@ const updateCompany = async (req, res) => {
             company: company._id
         });
         await userCompany.save();
-        console.log(userCompany);
+        // console.log(userCompany);
 
         //* 4 se actualiza la empresa con req.body
         const update = await Company.findByIdAndUpdate( id, req.body, { new: true })

@@ -57,6 +57,20 @@ const getByCuit = async (cuit) => {
         return null
     }
 }
+const getByDocument = async (document) => {
+    try {
+        // buscar por nombre name
+        const company = await Company.findOne({ document: document });
+        // si existe devolver
+        if (company) {
+            return company;
+        }   
+        return null    
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+}
 
 const updateCompanyContratista = async (id, contratista) => {
     try {
@@ -68,4 +82,4 @@ const updateCompanyContratista = async (id, contratista) => {
     }
 }
 
-module.exports = { updateCompanyContratista, getById, getAll, create, getByName, getByCuit };
+module.exports = { getByDocument, updateCompanyContratista, getById, getAll, create, getByName, getByCuit };

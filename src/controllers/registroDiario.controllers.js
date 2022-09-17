@@ -42,7 +42,7 @@ const createRegistro = async (req, res) => {
             second: '2-digit' 
         })
         // separar hora 2 digitos y minutos 2 digitos
-        console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
+        // console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
         //* 3 traer comida actual con la hora actual
         const comidaActual = await horarioService.getHoraComidaActual();
         if (!comidaActual || comidaActual == null) {
@@ -97,7 +97,7 @@ const getRegistros = async (req, res) => {
     const all = req.query.all;
     try {
         if (all) {
-            console.log(all)
+            // console.log(all)
             const allRegistrosDiarios = await getAllRegistrosDiarios()
             if (!allRegistrosDiarios) {
                 return res.status(400).json({
@@ -116,7 +116,7 @@ const getRegistros = async (req, res) => {
                 month: '2-digit',
                 year: 'numeric'
             })
-            console.log('dia hoy',dateToday)
+            // console.log('dia hoy',dateToday)
             const allRegistrosDiarios = await getAllRegistrosDiariosToday(dateToday)
             if (!allRegistrosDiarios) {
                 return res.status(400).json({
@@ -157,7 +157,7 @@ const updateRegistro = async (req, res) => {
         //* 2 buscamos en registro diario el usuario por id y fecha
         const fecha = new Date();
         const fechaHoy = `${fecha.getDate()}/${(fecha.getMonth() + 1)}/${fecha.getFullYear()}`;
-        console.log('fecha de hoy: ',fechaHoy);
+        // console.log('fecha de hoy: ',fechaHoy);
         const registro = await RegistroDiario.findOne({
             user: idUser,
             fecha: fechaHoy

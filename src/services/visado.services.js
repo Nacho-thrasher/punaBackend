@@ -1,6 +1,11 @@
 const Visado = require('../models/Visado');
 
-const createVisado = async(empresa, fechaRegistro, fechaVisado, usuario) => {
+const createVisado = async(
+    empresa, 
+    fechaRegistro, 
+    fechaVisado, 
+    usuario
+) => {
     try {
         const visado = new Visado({ empresa, fechaRegistro, fechaVisado, usuario });
         await visado.save();
@@ -27,7 +32,6 @@ const getVisadoByEmpresaAndFechaRegistro = async(empresa, fechaRegistro) => {
 const getVisadoByEmpresaAndDate = async(empresa, date) => {
     try {
         const visado = await Visado.find({ empresa, fechaRegistro: date })
-        console.log(visado)
         return visado;        
 
     } catch (error) {

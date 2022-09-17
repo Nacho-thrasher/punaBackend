@@ -7,10 +7,9 @@ const UserCompanyService = require('../services/userCompany.services');
 
 const createComensalesExcel = async (req, res) => {
     // const { idContratista } = req.params;
-
     const idContratista = req.params.idContratista;
     // por el body viene un arrapy de objetos
-    const { contratista, cuit, empleado, cuil, tipoDocumento, numeroDocumento } = req.body;
+    const { contratista, cuit, empleado, cuil, tipoDocumento, numeroDocumento, firstName, lastName } = req.body;
     try {
         if (!idContratista) {
             return res.status(400).json({
@@ -20,7 +19,7 @@ const createComensalesExcel = async (req, res) => {
         }
         const idRolComensal = '62e5dbe6817563c501736b19'
         //* 1 - buscar cuit en empresas si existe tomar id si no crearla
-        const company = await CompanyService.getByCuit(cuit);
+        const company = await CompanyService.getByDocument(numeroDocumento);
         if (!company || company == null) {
             //* 1 -2 si company no existe crearla 
             const newCompany = new Company({
@@ -33,15 +32,10 @@ const createComensalesExcel = async (req, res) => {
             });
             const idCompany = await newCompany.save();
             //* 1- 3 asignar variables
-            const firstName = empleado.split(',')[1]
-            const lastName = empleado.split(',')[0]
-            // si cuil incluye guiones
-            let document = numeroDocumento ? numeroDocumento : cuil.split;
+            let document = numeroDocumento ? numeroDocumento : cuil;
             if (cuil.includes('-')) {
                 document = cuil.split('-')[1];     
             }
-            // const document = numeroDocumento ? numeroDocumento : cuil.split('-')[1];
-
             const tipoDocument = tipoDocumento ? tipoDocumento : 'DNI'
             //* 1- 4 si existe editarlo
             const user = await UserService.getByDocument(numeroDocumento ? numeroDocumento : cuil.split('-')[1]);
@@ -73,10 +67,7 @@ const createComensalesExcel = async (req, res) => {
             const idCompany = company._id;
             await CompanyService.updateCompanyContratista(idCompany, idContratista);
             //* 1- 3 buscar usuario por documento
-            const firstName = empleado.split(',')[1]
-            const lastName = empleado.split(',')[0]
-            console.log(firstName, lastName);
-            const document = numeroDocumento ? numeroDocumento : cuil.split('-')[1];
+            const document = numeroDocumento ? numeroDocumento : cuil;
             const tipoDocument = tipoDocumento ? tipoDocumento : 'DNI'
             const user = await UserService.getByDocument(numeroDocumento ? numeroDocumento : cuil.split('-')[1]);
             if (user) {

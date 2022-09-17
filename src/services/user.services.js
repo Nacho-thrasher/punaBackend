@@ -3,6 +3,7 @@ const User_type          = require("../models/User_type.js");
 const Company            = require('../models/Company');
 const UserCompany        = require('../models/UserCompany');
 const bcrypt              = require('bcrypt');
+const mongoose = require('mongoose');
 
 const getAllUsers = async () => {
     try {
@@ -286,6 +287,99 @@ const getUserWithCompany = async (userId) => {
     }
 }
 
+const getUserCompanyById = async (userId) => {
+    try {
+        const usersCompanies = await UserCompany.aggregate([
+            { // #  lookup para obtener la empresa
+                $lookup: {
+                    from: 'companies',
+                    localField: 'company',
+                    foreignField: '_id',
+                    as: 'company'
+                },
+            },
+            { // #  unwind para mostrar como objeto 
+                $unwind: {
+                    path: '$company',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {   // match con userId 
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user',
+                    // pipeline para traer usertype
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: 'user_types',
+                                localField: 'user_type',
+                                foreignField: '_id',
+                                as: 'user_type'
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$user_type',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        // cargar aqui las empresas que el usuario tiene
+                    ]
+                }
+            },
+            { 
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // filtrar por id de usuario
+            {
+                $match: {
+                    'user._id': mongoose.Types.ObjectId(userId),
+                }
+            },
+            {
+                $project: {
+                    uid: '$user._id',
+                    userName: '$user.userName',
+                    firstName: '$user.firstName',
+                    lastName: '$user.lastName',
+                    email: '$user.email',
+                    typeDocument: '$user.typeDocument',
+                    document: '$user.document',
+                    cuil: '$user.cuil',
+                    image: '$user.image',
+                    user_type: {
+                        _id: '$user.user_type._id',
+                        name: '$user.user_type.name',
+                        description: '$user.user_type.description'
+                    },
+                    empresa: {
+                        uid: '$company._id',
+                        name: '$company.name',
+                        description: '$company.description',
+                        image: '$company.image',
+                        city: '$company.city',
+                        direction: '$company.direction',
+                        phone: '$company.phone',
+                        cuit: '$company.cuit',
+                    }
+                },
+                
+            }
+
+        ]);
+        return usersCompanies[0];
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const getById = async (id) => {
     try {
         const user = await User.findById(id)
@@ -396,4 +490,4 @@ const actualizarUserAndUserCompany = async (
     }
 }
 
-module.exports = { getUserCompanyByUser, actualizarUserAndUserCompany, getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };
+module.exports = { getUserCompanyById, getUserCompanyByUser, actualizarUserAndUserCompany, getUserWithCompany, getById, getByEmail, postUser, getAllUsersWithCompany, getByDocument, getAllUsers };

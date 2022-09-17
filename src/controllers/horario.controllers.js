@@ -61,7 +61,7 @@ const deleteHoraComida = async (req, res) => {}
 const getHoraComidaActual = async (req, res) => {
     try {
         // verficar en que horario de comida estamos 
-        console.log(new Date().toLocaleTimeString());
+        // console.log(new Date().toLocaleTimeString());
         const horaComidaActual = await horarioService.getHoraComidaActual();
         return res.status(200).json({
             ok: true,
