@@ -37,6 +37,7 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
               child: false,
               subMenu: null,
             },
+            
         )    
     }
     if (role == 'admin') {
@@ -121,6 +122,13 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
           child: false,
           subMenu: null
         },
+        {
+          titulo: 'Empresas',
+          icono: 'nav-icon fas fa-solid fa-building',
+          url: 'empresas',
+          child: false,
+          subMenu: null
+        }
       )
     }
     return menu;

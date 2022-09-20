@@ -9,12 +9,18 @@ const createComensalesExcel = async (req, res) => {
     // const { idContratista } = req.params;
     const idContratista = req.params.idContratista;
     // por el body viene un arrapy de objetos
-    const { contratista, cuit, empleado, cuil, tipoDocumento, numeroDocumento, firstName, lastName } = req.body;
+    const { contratista, cuit, empleado, cuil, tipoDocumento, numeroDocumento, firstName, lastName, linea } = req.body;
     try {
         if (!idContratista) {
             return res.status(400).json({
                 ok: false,
                 msg: 'No se ha enviado el id del contratista'
+            })
+        }
+        else if (!cuil && !numeroDocumento) {
+            return res.status(400).json({
+                ok: false,
+                msg: `No se ha enviado el cuil o el numero de documento en la linea:`
             })
         }
         const idRolComensal = '62e5dbe6817563c501736b19'
@@ -98,7 +104,7 @@ const createComensalesExcel = async (req, res) => {
         console.log(error)
         return res.status(500).json({
             ok:false,
-            msg: 'Error inesperado'
+            msg: error
         })
     }
 }
