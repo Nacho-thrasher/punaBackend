@@ -25,7 +25,7 @@ const createComensalesExcel = async (req, res) => {
         }
         const idRolComensal = '62e5dbe6817563c501736b19'
         //* 1 - buscar cuit en empresas si existe tomar id si no crearla
-        const company = await CompanyService.getByDocument(numeroDocumento);
+        const company = await CompanyService.getByCuit(cuit);
         if (!company || company == null) {
             //* 1 -2 si company no existe crearla 
             const newCompany = new Company({
