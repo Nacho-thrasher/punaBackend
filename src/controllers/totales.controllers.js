@@ -61,6 +61,7 @@ const getTotalesAnio = async (req, res) => {
         else {
             //* 1- obtener todos los registros
             const allRegistros = await getAllRegistrosDiarios();
+            
             //* 2- agregar a array de meses respectivos
             const meses = [
                 { mes: 'Enero', nroMes: 01, breakfast: 0, lunch: 0, afternoonSnack: 0, dinner: 0 },
@@ -78,6 +79,7 @@ const getTotalesAnio = async (req, res) => {
             ];
             let visados = 0; let noVisados = 0; let total = 0;
             //* 3- buscar en cada registro el mes y sumarle los valores
+            
             allRegistros.forEach((registro) => {
                 const mesRegistro = registro.date.split('/')[1];
                 meses.forEach((mes) => {
@@ -98,6 +100,7 @@ const getTotalesAnio = async (req, res) => {
                     }
                 });
             });
+            
             //* 4 
             for (let index = 0; index < meses.length; index++) {
                 const mes = meses[index];
@@ -108,6 +111,12 @@ const getTotalesAnio = async (req, res) => {
                     mes.fechas = fechasSinRepetir;
                 }
             }
+            //* 4- devolver array de meses con sus totales
+            return res.status(200).json({
+                ok: true,
+                data: meses,
+            })
+            
             let cantidadVisar = 0; let cantidadVisada = 0;
             //* buscar registros por mes y separar por empresa
             for (let index = 0; index < meses.length; index++) {
@@ -116,12 +125,11 @@ const getTotalesAnio = async (req, res) => {
                     const fechas = mes.fechas;
                     const empresas = [];
                     for (let index = 0; index < fechas.length; index++) {
-                        console.log(fechas[index]);
                         const regs = await RegistroDiarioService.getRegistrosByDate(fechas[index]);
+
                         // no repetir empresas usuario.empresa
                         const empresasSinRepetir = [...new Set(regs.map(reg => reg.usuario.empresa))];
                         // recorrer empresas sin repetir y preguntar si se viso o no
-                        console.log(empresasSinRepetir);
                         for (let index = 0; index < empresasSinRepetir.length; index++) {
                             cantidadVisar += 1;
                             const empresa = empresasSinRepetir[index].uid;
@@ -136,7 +144,6 @@ const getTotalesAnio = async (req, res) => {
                 }
             }
             // console.log(cantidadVisar, cantidadVisada);
-            console.log(meses);
 
             // console.log('meses', meses[8]);
             //* 4- devolver array de meses con sus totales
