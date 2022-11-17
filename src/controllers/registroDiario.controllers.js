@@ -99,6 +99,8 @@ const getRegistros = async (req, res) => {
         if (all) {
             // console.log(all)
             const allRegistrosDiarios = await getAllRegistrosDiarios()
+            //? reverse para que los ultimos registros aparezcan primero
+
             if (!allRegistrosDiarios) {
                 return res.status(400).json({
                     ok: false,
@@ -107,7 +109,7 @@ const getRegistros = async (req, res) => {
             }
             return res.status(200).json({
                 ok: true,
-                registros: allRegistrosDiarios
+                registros: allRegistrosDiarios.reverse()
             });
 
         } else {

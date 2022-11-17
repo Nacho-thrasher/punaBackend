@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const validarJwt = (req, res, next) => {
     //? leer headers
+    
     const token = req.headers.authorization;
     // console.log(token, 'hay token en validar');
     if (!token) {
@@ -26,6 +27,7 @@ const validarJwt = (req, res, next) => {
             msg: 'Invalid Token'
         });
     }
+    
 }
 //? export
 module.exports = { validarJwt };

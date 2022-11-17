@@ -8,3 +8,6 @@ router.get('/:mes/:dia', [ validarJwt ], getTotalesEmpresa)
 router.get('/:mes/:dia/:empresa', [ validarJwt ], getTotalesDia)
 
 module.exports = router;
+
+// params /:mes/:dia/:empresa
+// queries  localhost:/totales?nombre=nacho

@@ -237,6 +237,10 @@ const getAllRegistrosDiarios = async()=>{
     try {
         const registrosDiarios = await RegistroDiario.aggregate([
             {
+                // mas nuevos primero
+                $sort: { createdDate: -1 }
+            },
+            {
                 $unwind: {
                     path: '$user_companies',
                     preserveNullAndEmptyArrays: true

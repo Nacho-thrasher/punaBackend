@@ -143,9 +143,6 @@ const getTotalesAnio = async (req, res) => {
                     }
                 }
             }
-            // console.log(cantidadVisar, cantidadVisada);
-
-            // console.log('meses', meses[8]);
             //* 4- devolver array de meses con sus totales
             return res.status(200).json({
                 ok: true,

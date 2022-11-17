@@ -131,6 +131,20 @@ const getMenuFrontEnd = (role = 'user') =>{ //? user comun
         }
       )
     }
+    if (role == 'comensal') {
+      menu.push(
+        {
+          titulo: 'Registrar Comensales',
+          icono: 'nav-icon fas fa-solid fa-file',
+          url: 'registrar-comensales',
+          child: false,
+          subMenu: null
+        },
+      )
+      //* borramos el menu de inicio
+      menu.shift()
+      
+    }
     return menu;
 }
 
