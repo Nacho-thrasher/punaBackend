@@ -45,17 +45,16 @@ const getHoraComidaActual = async () => {
         const horaActual = new Date().toLocaleString("es-AR", {timeZone: "America/Argentina/Buenos_Aires", 
             hour: 'numeric', minute: 'numeric'
         });
+        
         // devolver hora de comida actual en la que nos encontramos con respecto a la hora local
-        console.log(horaActual);        
+        console.log("horaactual = ",horaActual);
+        //* si la hora actual es 00 o 01 o 02 
+        //* entonces la hora de comida actual es la ultima hora de comida del dia anterior
+
+        
         const horaComidaActual = await HorasComida.findOne({
-            horaInicio: {
-                // $lte = less than or equal to (menor o igual que)
-                $lte: horaActual
-            },
-            horaFin: {
-                // $gte = greater than or equal to (mayor o igual que)
-                $gte: horaActual
-            }
+            horaInicio: { $lte: horaActual },
+            horaFin: { $gte: horaActual }
         });
         // si no encontramos ninguna hora de comida que coincida con la hora actual
         if (!horaComidaActual) {
