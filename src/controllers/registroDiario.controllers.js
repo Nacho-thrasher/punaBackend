@@ -135,7 +135,7 @@ const getRegistros = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.json.status(500).json({
+        return res.status(500).json({
             message: `error: ${error}`,
         })
     }
@@ -200,7 +200,7 @@ const updateRegistro = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.json.status(500).json({
+        return res.status(500).json({
             message: `error: ${error}`,
         })   
     }
@@ -234,7 +234,7 @@ const getRegistroByCompany = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.json.status(500).json({
+        return res.status(500).json({
             message: `error: ${error}`,
         })
     }
@@ -271,9 +271,7 @@ const createRegistroManual = async (req, res) => {
             minute: '2-digit',
             second: '2-digit' 
         })
-        console.log(`fecha hoy ${fechaHoy}, hora actual ${horaActual}`);	
         const typeMenu = menu[horaMenu];
-        console.log('typeMenu', typeMenu);
         //* 4 armar objeto 
         const args = {
             user: idUser,
@@ -284,35 +282,50 @@ const createRegistroManual = async (req, res) => {
             [horaMenu]: typeMenu._id,
             createdBy: idUserSoliciante
         }  
-        console.log('args', args);
-
-        //* 4 si existe usuario, se crea registro
-        const registro = await createRegistroDiario(args);
-        if (!registro) {
+        //* buscar por id de usuario, fecha y tipo de menu para la hora actual si existen coincidencias error
+        //* pueden ser mas de un registro por dia
+        const registroFind = await RegistroDiario.find({
+            user: idUser,
+            date: fecha
+        });
+        //* buscar si tiene la key del menu
+        let registro = registroFind.find(reg => reg[horaMenu]);
+        if (registro) {
             return res.status(400).json({
                 ok: false,
-                message: 'No se pudo crear registro'
+                message: 'Ya existe registro'
             });
         }
-        const registroPopulate = await RegistroDiario.findById(registro._id)
-        .populate('type')
-        .populate('breakfast')
-        .populate('lunch')
-        .populate('afternoonSnack')
-        .populate('dinner')
-        .populate('user');
-        
-        return res.status(200).json({
-            ok: true,
-            registro: registroPopulate
-        });
+        else {
+            //* 4 si existe usuario, se crea registro
+            const registro = await createRegistroDiario(args);
+            if (!registro) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'No se pudo crear registro'
+                });
+            }
+            const registroPopulate = await RegistroDiario.findById(registro._id)
+            .populate('type')
+            .populate('breakfast')
+            .populate('lunch')
+            .populate('afternoonSnack')
+            .populate('dinner')
+            .populate('user');
+            
+            return res.status(200).json({
+                ok: true,
+                registro: registroPopulate
+            });
+        }
 
     } catch (error) {
         console.log(error);
-        return res.json.status(500).json({
+        return res.status(500).json({
             message: `error: ${error}`,
         })
     }
 }
+
 
 module.exports = { createRegistroManual, createRegistro, getRegistro, getRegistros, updateRegistro, deleteRegistro, getRegistroByCompany } 
